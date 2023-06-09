@@ -170,6 +170,7 @@ def updateLibrary(libName, category, comment, repoURL, groupId, artefactId):
     print("  # check library " + libName + " [" + category + "]   (g:\"" + groupId + "\" AND a:\"" + artefactId + "\")")
 
     baseDirName = localRepoDir + category + "/" + libName + "/"
+    baseDirName = baseDirName.replace("::","_") # twisted this path contains "::" windows error occured
     dir = os.path.dirname(baseDirName)
     make_sure_path_exists(dir);
 

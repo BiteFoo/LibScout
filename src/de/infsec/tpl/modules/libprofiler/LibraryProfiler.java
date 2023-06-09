@@ -83,17 +83,19 @@ public class LibraryProfiler {
 			logger.info(desc);
 		
 		// create analysis scope and generate class hierarchy
-		final AnalysisScope scope = AnalysisScope.createJavaAnalysisScope();
-		
+		final AnalysisScope scope = AnalysisScope.createJavaAnalysisScope(); //准备一个调用流程对象
+
+		//这里判读如果是aar则保存为jar文件，写入的是tmpdir目录 并返回一个jar文件给jf
 		JarFile jf = libraryFile.getName().endsWith(".aar")? new AarFile(libraryFile).getJarFile() : new JarFile(libraryFile); 
 		scope.addToScope(ClassLoaderReference.Application, jf);
-		scope.addToScope(ClassLoaderReference.Primordial, new JarFile(LibScoutConfig.pathToAndroidJar));
+		scope.addToScope(ClassLoaderReference.Primordial, new JarFile(LibScoutConfig.pathToAndroidJar)); //增加android.jar文件
 
-		IClassHierarchy cha = ClassHierarchyFactory.makeWithRoot(scope);
+		IClassHierarchy cha = ClassHierarchyFactory.makeWithRoot(scope); //开始获取调用流程关系
 		WalaUtils.getChaStats(cha);
 		
 		// cleanup tmp files if library input was an .aar file
 		if (libraryFile.getName().endsWith(".aar")) {
+			//删除创建的临时文件jar
 			File tmpJar = new File(jf.getName());
 			tmpJar.delete();
 			logger.debug(Utils.indent() + "tmp jar-file deleted at " + tmpJar.getName());
@@ -126,6 +128,7 @@ public class LibraryProfiler {
 
 		logger.info("");
 		logger.info("Serialize library fingerprint to disk (dir: " + targetDir + ")");
+		System.out.println("-> serialize library fingerprint to disk (dir: " + targetDir+")");
 
 		LibProfile lp = new LibProfile(libDesc, pTree, hTrees);
 		Utils.object2Disk(proFile, lp);

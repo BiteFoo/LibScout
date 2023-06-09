@@ -67,7 +67,7 @@ public class XMLParser {
 	
 	public static LibraryDescription readLibraryXML(File file) throws ParserConfigurationException, SAXException, IOException, ParseException {
 		if (file == null || !file.exists() || file.isDirectory())
-			throw new IOException("Library description file does not exist or is a directory!");
+			throw new IOException("Library description file does not exist or is a directory! => "+file.getAbsolutePath());
 		
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();

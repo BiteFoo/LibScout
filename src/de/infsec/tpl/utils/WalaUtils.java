@@ -18,6 +18,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.ibm.wala.classLoader.IClassLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -228,13 +229,15 @@ public class WalaUtils {
 		// possibly related too: http://bugs.java.com/bugdatabase/view_bug.do?bug_id=4295934
 		boolean isEmptyInnerClass = WalaUtils.isInnerClass(clazz)
 									&& isAnonymousInnerClass(clazz)
-									&& (clazz.getDeclaredMethods().isEmpty() || 
+									&& (clazz.getDeclaredMethods().isEmpty() ||
 									   (clazz.getDeclaredMethods().size() == 1 && clazz.getDeclaredMethods().iterator().next().isClinit())
 									&& clazz.getDeclaredInstanceFields().isEmpty()
 									&& clazz.getDeclaredStaticFields().isEmpty()
 									&& clazz.getDirectInterfaces().isEmpty());
 
-		return clazz.getClassHierarchy().getScope().isApplicationLoader(clazz.getClassLoader()) && !isAndroidResourceClass(clazz) && !isEmptyInnerClass && !clazz.isSynthetic();
+		IClassLoader loader = clazz.getClassLoader();
+//		System.out.println("--<> Checking isAppClass "+clazz.getName() +" isEmptyInnerClass? "+ isEmptyInnerClass +" classLoader = " + loader.getName());
+		return clazz.getClassHierarchy().getScope().isApplicationLoader(loader) && !isAndroidResourceClass(clazz) && !isEmptyInnerClass && !clazz.isSynthetic();
 	}
 	
 	public static boolean isExtensionClass(IClass clazz) {

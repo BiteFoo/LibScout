@@ -145,6 +145,7 @@ public class TplCLI {
 					libUp.checkUpdatability(stats);
 
 				} else if (LibScoutConfig.opProfile()) {
+					System.out.println("-> profiling "+libraryDescription +" inputFile = "+inputFile);
 					LibraryProfiler.extractFingerPrints(inputFile, libraryDescription);
 
 				} else if (LibScoutConfig.opLibApiAnalysis()) {
@@ -227,6 +228,7 @@ public class TplCLI {
 			
 			// provide library description file
 			if (checkRequiredUse(cmd, CliArgs.ARG_LIB_DESCRIPTION, LibScoutConfig.OpMode.PROFILE)) {
+				logger.info("-> profiling libs description file =  " + libraryDescription);
 				File libraryDescriptionFile = new File(cmd.getOptionValue(CliArgs.ARG_LIB_DESCRIPTION));
 				if (libraryDescriptionFile.exists() && libraryDescriptionFile.isDirectory())
 					throw new ParseException("Library description (" + libraryDescriptionFile + ") must not be a directory");

@@ -25,17 +25,17 @@
 # @author Erik Derr [derr@cs.uni-saarland.de]
 #
 
+set -e
 # LibScout dir and arguments
-LIBSCOUT_ROOT="<NOTSET>"                      # path to the LibScout root directory
-LIBSCOUT="$LIBSCOUT_ROOT/build/libs/LibScout.jar"
-ANDROID_SDK="<NOTSET>"                        # argument: path to Android SDK
+LIBSCOUT_ROOT="/home/loopher/Desktop/atk" # path to the LibScout root directory
+LIBSCOUT="$LIBSCOUT_ROOT/build/libs/atk.jar"
+ANDROID_SDK="/home/loopher/android-sdk/platforms/android-30/android.jar" # argument: path to Android SDK
 
-LOG_DIR=""    # optional argument: enable logging via "-d <log_dir>"
-JOBS=2        # Number of parallel instances
+LOG_DIR="" # optional argument: enable logging via "-d <log_dir>"
+JOBS=2     # Number of parallel instances
 
 GRADLE_BUILD="$LIBSCOUT_ROOT/gradlew build"
 LIBXML="library.xml"
-
 
 function usage() {
 	echo "Usage $0 <library-directory>"
@@ -43,19 +43,18 @@ function usage() {
 }
 
 function seconds2Time() {
-   H=$(($1/60/60%24))
-   M=$(($1/60%60))
-   S=$(($1%60))
+	H=$(($1 / 60 / 60 % 24))
+	M=$(($1 / 60 % 60))
+	S=$(($1 % 60))
 
-   if [ ${H} != 0 ]; then
-      echo ${H} h ${M} min ${S} sec
-   elif [ ${M} != 0 ]; then
-      echo ${M} min ${S} sec
-   else
-      echo ${S} sec
-   fi
+	if [ ${H} != 0 ]; then
+		echo ${H} h ${M} min ${S} sec
+	elif [ ${M} != 0 ]; then
+		echo ${M} min ${S} sec
+	else
+		echo ${S} sec
+	fi
 }
-
 
 ## 1. check for <UNSET> variables
 if [ $LIBSCOUT_ROOT = "<NOTSET>" ]; then
@@ -80,16 +79,16 @@ elif [ $# -eq 1 ]; then
 fi
 
 # change to libscout root
-CUR_DIR=`pwd`
+CUR_DIR=$(pwd)
 cd $LIBSCOUT_ROOT
 
 ## 3. generate LibScout.jar if not existing
 if [ ! -e $LIBSCOUT ]; then
 	echo -n "[info] $LIBSCOUT does not exist, generating jar file now..."
-	$GRADLE_BUILD > /dev/null
+	$GRADLE_BUILD >/dev/null
 	if [ $? != 0 ]; then
 		echo "[failed]"
-		exit $rc;
+		exit $rc
 	fi
 	echo "[done]"
 fi
@@ -99,11 +98,10 @@ echo "= Generating library profiles ="
 STARTTIME=$(date +%s)
 
 # run $JOBS instances in parallel
-echo "# `find $LIBDIR -type f -name $LIBXML| wc -l` library.xml files found in $LIBDIR"
-find $LIBDIR -type f -name $LIBXML |  parallel --no-notice --jobs $JOBS "echo \" - gen profile: {//}\" ; java -jar $LIBSCOUT -o profile -m -a $ANDROID_SDK $LOG_DIR -x {} {//}"
+echo "# $(find $LIBDIR -type f -name $LIBXML | wc -l) library.xml files found in $LIBDIR"
+find $LIBDIR -type f -name $LIBXML | parallel --no-notice --jobs $JOBS "echo \" - gen profile: {//}\" ; java -jar $LIBSCOUT -o profile -m -a $ANDROID_SDK $LOG_DIR -x {} {//}"
 
 ENDTIME=$(date +%s)
 echo
-echo "# processing done in `seconds2Time $[ $ENDTIME - $STARTTIME ]`"
-cd $CUR_DIR  # restore old dir
-
+echo "# processing done in $(seconds2Time $(($ENDTIME - $STARTTIME)))"
+cd $CUR_DIR # restore old dir
