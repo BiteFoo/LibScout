@@ -1,4 +1,9 @@
 bin
 build
+# ignore official profiles
 LibScout-Profiles
+# ignore profiles
+profiles
+# ignore downlaod libs
+scripts/my-lib-repo
 
